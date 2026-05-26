@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo DecoStar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       IDENTIDAD CORPORATIVA - MODIFICA AQUÍ TUS COLORES Y ESTILOS CUANDO QUIERAS
+       ========================================================================== */
+    :root {
+      --color-primario: #1A2530;     /* Azul Medianoche (Fondos oscuros, títulos) */
+      --color-secundario: #8E97A0;   /* Gris Acero (Bordes, textos secundarios) */
+      --color-acento: #C5A059;       /* Cobre / Oro Viejo (Botones, selección, destacados) */
+      --color-fondo-web: #F4F6F8;    /* Fondo general de la página */
+      --color-tarjeta: #FFFFFF;      /* Fondo de los cuadros de diseño */
+      --color-texto: #1A2530;        /* Color de letra principal */
+      --fuente-titulos: 'Poppins', sans-serif;
+      --fuente-cuerpo: 'Inter', sans-serif;
+      --radio-esquinas: 12px;
+    }
+
+    /* Estilos Generales Reseteo */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--fuente-cuerpo);
+      background-color: var(--color-fondo-web);
+      color: var(--color-texto);
+      padding-bottom: 100px; /* Espacio para la barra flotante inferior */
+    }
+
+    /* Encabezado */
+    header {
+      background-color: var(--color-primario);
+      color: #ffffff;
+      text-align: center;
+      padding: 40px 20px;
+      border-bottom: 4px solid var(--color-acento);
+    }
+    header h1 {
+      font-family: var(--fuente-titulos);
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    header p {
+      color: var(--color-secundario);
+      font-size: 1.1rem;
+    }
+
+    /* Contenedor Principal */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Buscador y Filtros */
+    .filter-section {
+      background: var(--color-tarjeta);
+      padding: 20px;
+      border-radius: var(--radio-esquinas);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+    .search-box {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      border: 2px solid #E2E8F0;
+      border-radius: var(--radio-esquinas);
+      margin-bottom: 15px;
+      font-family: var(--fuente-cuerpo);
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .search-box:focus {
+      border-color: var(--color-acento);
+    }
+    .categories-label {
+      font-family: var(--fuente-titulos);
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      color: var(--color-primario);
+      display: block;
+    }
+    .categories-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .category-chip {
+      cursor: pointer;
+    }
+    .category-chip input {
+      display: none;
+    }
+    .category-chip span {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #EDF2F7;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.3s;
+      text-transform: capitalize;
+    }
+    .category-chip input:checked + span {
+      background-color: var(--color-acento);
+      color: #ffffff;
+    }
+
+    /* Grid de Diseños (Completamente Responsive) */
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+    }
+
+    /* Tarjeta de Producto */
+    .card {
+      background: var(--color-tarjeta);
+      border-radius: var(--radio-esquinas);
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 1px solid #E2E8F0;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .card.selected {
+      border-color: var(--color-acento);
+      transform: translateY(-4px);
+    }
+    .card-img-container {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background-color: #E2E8F0;
+      position: relative;
+    }
+    .card-img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-info {
+      padding: 15px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .card-code {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-acento);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .card-title {
+      font-family: var(--fuente-titulos);
+      font-size: 1.1rem;
+      color: var(--color-primario);
+      margin-bottom: 10px;
+    }
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+    .tag {
+      font-size: 0.7rem;
+      background: #F1F5F9;
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: var(--color-secundario);
+    }
+    .btn-select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid var(--color-acento);
+      background: transparent;
+      color: var(--color-acento);
+      font-weight: 600;
+      border-radius: calc(var(--radio-esquinas) - 4px);
+      cursor: pointer;
+      font-family: var(--fuente-cuerpo);
+      transition: all 0.2s;
+    }
+    .card.selected .btn-select {
+      background: var(--color-acento);
+      color: #ffffff;
+    }
+
+    /* Barra Inferior Fija de Pedidos */
+    .sticky-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--color-primario);
+      color: #ffffff;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+      z-index: 100;
+      transform: translateY(100%);
+      transition: transform 0.3s ease-in-out;
+    }
+    .sticky-bar.show {
+      transform: translateY(0);
+    }
+    .sticky-info p { font-size: 1rem; font-weight: 500; }
+    .btn-order {
+      background: var(--color-acento);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: var(--radio-esquinas);
+      cursor: pointer;
+      font-family: var(--fuente-titulos);
+    }
+
+    /* Modal (Ventana Emergente del Formulario) */
+    .modal-overlay {
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(26, 37, 48, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal {
+      background: white;
+      padding: 30px;
+      border-radius: var(--radio-esquinas);
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .modal h2 {
+      font-family: var(--fuente-titulos);
+      color: var(--color-primario);
+      margin-bottom: 15px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #E2E8F0;
+      border-radius: var(--radio-esquinas);
+      font-family: var(--fuente-cuerpo);
+      font-size: 1rem;
+    }
+    .form-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-submit {
+      flex: 1;
+      background: #25D366; /* Verde Oficial de WhatsApp */
+      color: white;
+      border: none;
+      padding: 12px;
+      font-weight: 600;
+      border-radius: var(--radio-esquinas);
+      cursor: pointer;
+    }
+    .btn-cancel {
+      background: #EDF2F7;
+      color: #4A5568;
+      border: none;
+      padding: 12px 20px;
+      border-radius: var(--radio-esquinas);
+      cursor: pointer;
+    }
+
+    /* Mensaje de Carga de Datos */
+    .loading {
+      text-align: center;
+      font-size: 1.2rem;
+      color: var(--color-secundario);
+      padding: 50px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Catálogo DecoStar</h1>
+    <p>Selecciona tus diseños favoritos</p>
+  </header>
+
+  <div class="container">
+    <div class="filter-section">
+      <input type="text" id="searchBar" class="search-box" placeholder="Buscar por nombre o código único...">
+      
+      <span class="categories-label">Filtrar por categorías (puedes marcar varias):</span>
+      <div class="categories-grid" id="categoriesContainer">
+        <label class="category-chip"><input type="checkbox" value="aesthetic"><span>aesthetic</span></label>
+        <label class="category-chip"><input type="checkbox" value="minimalista"><span>minimalista</span></label>
+        <label class="category-chip"><input type="checkbox" value="sencillo"><span>sencillo</span></label>
+        <label class="category-chip"><input type="checkbox" value="economico"><span>economico</span></label>
+        <label class="category-chip"><input type="checkbox" value="premium"><span>premium</span></label>
+      </div>
+    </div>
+
+    <div id="loading" class="loading">Cargando los espectaculares diseños...</div>
+    <div class="catalog-grid" id="catalogGrid"></div>
+  </div>
+
+  <div class="sticky-bar" id="stickyBar">
+    <div class="sticky-info">
+      <p id="selectedCount">0 diseños seleccionados</p>
+    </div>
+    <button class="btn-order" onclick="openModal()">Hacer Pedido</button>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h2>Datos de Contacto</h2>
+      <p style="font-size:0.85rem; color:var(--color-secundario); margin-bottom:20px;">Completa tus datos para enviarte los diseños preseleccionados.</p>
+      
+      <form id="orderForm" onsubmit="sendOrder(event)">
+        <div class="form-group">
+          <label for="clientName">Nombre Completo *</label>
+          <input type="text" id="clientName" required placeholder="Ej. Juan Pérez">
+        </div>
+        <div class="form-group">
+          <label for="clientWhatsapp">Número de WhatsApp *</label>
+          <input type="tel" id="clientWhatsapp" required placeholder="Ej. 3181234567">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-submit">Enviar por WhatsApp 🚀</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       CONFIGURACIÓN GENERAL
+       ========================================================================== */
+    // PEGA AQUÍ LA URL COMPLETA QUE COPIASTE DE GOOGLE APPS SCRIPT
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxq3E3wbHK1ITwI2r4NvwxtMYhbd7uTh1dEHgD0CB55e-UPSCnMvFYex9-hPqU_gdGjCQ/exec"; 
+    
+    // Tu número de WhatsApp de atención (Se le fuerza el código de Colombia 57 si no lo tiene)
+    const MY_WHATSAPP = "573181688455"; 
+    
+    const BASE_MESSAGE = "Hola! Este es mi pedido, queda pendiente las medidas que se que me vas a dar una vez valides los diseños que tengo aquí";
+
+    let productsData = [];
+    let selectedProducts = new Set();
+
+    // Cargar datos al iniciar la página
+    async function loadCatalog() {
+      try {
+        const response = await fetch(APPS_SCRIPT_URL);
+        productsData = await response.json();
+        document.getElementById('loading').style.display = 'none';
+        renderCatalog(productsData);
+      } catch (error) {
+        console.error("Error cargando catálogo: ", error);
+        document.getElementById('loading').innerText = "Hubo un problema al cargar el catálogo. Por favor intenta de nuevo.";
+      }
+    }
+
+    // Dibujar las tarjetas en la pantalla
+    function renderCatalog(products) {
+      const grid = document.getElementById('catalogGrid');
+      grid.innerHTML = "";
+
+      if(products.length === 0) {
+        grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:var(--color-secundario);'>No se encontraron diseños con estos filtros.</p>";
+        return;
+      }
+
+      products.forEach(prod => {
+        const isSelected = selectedProducts.has(prod.id);
+        
+        // Formatear categorías para los tags visuales
+        const tagsHTML = prod.categorias 
+          ? prod.categorias.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('')
+          : '';
+
+        const card = document.createElement('div');
+        card.className = `card ${isSelected ? 'selected' : ''}`;
+        card.id = `card-${prod.id}`;
+        card.innerHTML = `
+          <div class="card-img-container">
+            <img src="${prod.imagen || 'https://via.placeholder.com/400'}" alt="${prod.nombre}" loading="lazy">
+          </div>
+          <div class="card-info">
+            <div>
+              <div class="card-code">Código: ${prod.id}</div>
+              <div class="card-title">${prod.nombre}</div>
+              <div class="card-tags">${tagsHTML}</div>
+            </div>
+            <button class="btn-select" onclick="toggleSelect('${prod.id}')">
+              ${isSelected ? '✓ Seleccionado' : 'Seleccionar'}
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Marcar / Desmarcar un diseño
+    function toggleSelect(id) {
+      const card = document.getElementById(`card-${id}`);
+      if (selectedProducts.has(id)) {
+        selectedProducts.delete(id);
+        card.classList.remove('selected');
+        card.querySelector('.btn-select').innerText = 'Seleccionar';
+      } else {
+        selectedProducts.add(id);
+        card.classList.add('selected');
+        card.querySelector('.btn-select').innerText = '✓ Seleccionado';
+      }
+      updateStickyBar();
+    }
+
+    // Actualizar estados de la barra inferior
+    function updateStickyBar() {
+      const bar = document.getElementById('stickyBar');
+      const countText = document.getElementById('selectedCount');
+      
+      countText.innerText = `${selectedProducts.size} diseño${selectedProducts.size !== 1 ? 's' : ''} seleccionado${selectedProducts.size !== 1 ? 's' : ''}`;
+      
+      if (selectedProducts.size > 0) {
+        bar.classList.add('show');
+      } else {
+        bar.classList.remove('show');
+      }
+    }
+
+    // Sistema Inteligente Combinado de Filtros (Buscador + Checkboxes)
+    function filterProducts() {
+      const searchText = document.getElementById('searchBar').value.toLowerCase().trim();
+      
+      // Obtener qué categorías están marcadas
+      const checkedBoxes = Array.from(document.querySelectorAll('#categoriesContainer input:checked'));
+      const activeCategories = checkedBoxes.map(cb => cb.value.toLowerCase().trim());
+
+      const filtered = productsData.filter(prod => {
+        // Filtro de texto (busca en ID o en el Nombre)
+        const nameMatch = prod.nombre ? prod.nombre.toLowerCase().includes(searchText) : false;
+        const idMatch = prod.id ? prod.id.toString().toLowerCase().includes(searchText) : false;
+        const matchesSearch = nameMatch || idMatch;
+
+        // Filtro de Categorías Múltiples (Lógica "O": Muestra si tiene al menos una de las seleccionadas)
+        let matchesCategory = true;
+        if (activeCategories.length > 0) {
+          if (!prod.categorias) {
+            matchesCategory = false;
+          } else {
+            const prodCats = prod.categorias.split(',').map(c => c.toLowerCase().trim());
+            matchesCategory = activeCategories.some(cat => prodCats.includes(cat));
+          }
+        }
+
+        return matchesSearch && matchesCategory;
+      });
+
+      renderCatalog(filtered);
+    }
+
+    // Escuchadores de eventos para filtros inmediatos
+    document.getElementById('searchBar').addEventListener('input', filterProducts);
+    document.getElementById('categoriesContainer').addEventListener('change', filterProducts);
+
+    // Funciones del Modal
+    function openModal() { document.getElementById('modalOverlay').classList.add('open'); }
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+    // Procesar envío final a WhatsApp
+    function sendOrder(event) {
+      event.preventDefault();
+      
+      const clientName = document.getElementById('clientName').value.trim();
+      const clientWa = document.getElementById('clientWhatsapp').value.trim();
+
+      // Recopilar los objetos de productos seleccionados
+      const itemsOrdered = productsData.filter(p => selectedProducts.has(p.id));
+      
+      // Construir el bloque de texto con los productos elegidos
+      let productsListText = "";
+      itemsOrdered.forEach(p => {
+        productsListText += `\n- Código: ${p.id} (${p.nombre})`;
+      });
+
+      // Construcción del mensaje final estructurado
+      const finalMessage = `${BASE_MESSAGE}\n\n*MIS DATOS:*` +
+                           `\n👤 *Nombre:* ${clientName}` +
+                           `\n📱 *WhatsApp:* ${clientWa}\n` +
+                           `\n🛒 *DISEÑOS SELECCIONADOS:*${productsListText}`;
+
+      // Generación de URL codificada para WhatsApp API
+      const whatsappURL = `https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(finalMessage)}`;
+      
+      // Abrir chat en pestaña nueva
+      window.open(whatsappURL, '_blank');
+      closeModal();
+    }
+
+    // Arrancar la carga
+    loadCatalog();
+  </script>
+</body>
+</html>
