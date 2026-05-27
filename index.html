@@ -39,6 +39,20 @@
       padding: 40px 20px;
       border-bottom: 4px solid var(--color-acento);
     }
+    
+    /* MEJORA: Espacio Maquetado para el Logo Rectangular */
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .logo-img {
+      max-width: 280px;      /* Ancho máximo ideal para logos rectangulares */
+      max-height: 85px;      /* Alto máximo para mantener armonía visual */
+      object-fit: contain;
+    }
+    
     header h1 {
       font-family: var(--fuente-titulos);
       font-size: 2.5rem;
@@ -135,11 +149,14 @@
       border-color: var(--color-acento);
       transform: translateY(-4px);
     }
+    
+    /* MEJORA: Cursor de Zoom para denotar interactividad */
     .card-img-container {
       width: 100%;
       aspect-ratio: 1 / 1;
       background-color: #E2E8F0;
       position: relative;
+      cursor: zoom-in;
     }
     .card-img-container img {
       width: 100%;
@@ -300,6 +317,46 @@
       cursor: pointer;
     }
 
+    /* MEJORA: Estilos para el Zoom de Imagenes (Lightbox) */
+    .lightbox-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 300;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .lightbox-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .lightbox-content {
+      max-width: 90%;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      transform: scale(0.95);
+      transition: transform 0.3s ease;
+    }
+    .lightbox-overlay.open .lightbox-content {
+      transform: scale(1);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      color: #ffffff;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+    }
+
     /* Mensaje de Carga de Datos */
     .loading {
       text-align: center;
@@ -312,6 +369,9 @@
 <body>
 
   <header>
+    <div class="logo-container">
+      <img src="TU_URL_DE_LOGO_AQUI" alt="Logo DecoStar" class="logo-img" onerror="this.style.display='none'">
+    </div>
     <h1>Catálogo DecoStar</h1>
     <p>Selecciona tus diseños favoritos</p>
   </header>
@@ -321,13 +381,7 @@
       <input type="text" id="searchBar" class="search-box" placeholder="Buscar por nombre o código único...">
       
       <span class="categories-label">Filtrar por categorías (puedes marcar varias):</span>
-      <div class="categories-grid" id="categoriesContainer">
-        <label class="category-chip"><input type="checkbox" value="aesthetic"><span>aesthetic</span></label>
-        <label class="category-chip"><input type="checkbox" value="minimalista"><span>minimalista</span></label>
-        <label class="category-chip"><input type="checkbox" value="sencillo"><span>sencillo</span></label>
-        <label class="category-chip"><input type="checkbox" value="economico"><span>economico</span></label>
-        <label class="category-chip"><input type="checkbox" value="premium"><span>premium</span></label>
-      </div>
+      <div class="categories-grid" id="categoriesContainer"></div>
     </div>
 
     <div id="loading" class="loading">Cargando los espectaculares diseños...</div>
@@ -363,16 +417,17 @@
     </div>
   </div>
 
+  <div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img class="lightbox-content" id="lightboxImg" alt="Diseño Ampliado">
+  </div>
+
   <script>
     /* ==========================================================================
        CONFIGURACIÓN GENERAL
        ========================================================================== */
-    // PEGA AQUÍ LA URL COMPLETA QUE COPIASTE DE GOOGLE APPS SCRIPT
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxq3E3wbHK1ITwI2r4NvwxtMYhbd7uTh1dEHgD0CB55e-UPSCnMvFYex9-hPqU_gdGjCQ/exec"; 
-    
-    // Tu número de WhatsApp de atención (Se le fuerza el código de Colombia 57 si no lo tiene)
     const MY_WHATSAPP = "573181688455"; 
-    
     const BASE_MESSAGE = "Hola! Este es mi pedido, queda pendiente las medidas que se que me vas a dar una vez valides los diseños que tengo aquí";
 
     let productsData = [];
@@ -383,12 +438,46 @@
       try {
         const response = await fetch(APPS_SCRIPT_URL);
         productsData = await response.json();
+        
+        // MEJORA 1: ORDEN ALEATORIO - Mezclar los diseños cada vez que se carga la página
+        productsData.sort(() => Math.random() - 0.5);
+
+        // MEJORA 2: CATEGORÍAS DINÁMICAS - Extraer de manera inteligente lo que escribas en Sheets
+        const categoriesSet = new Set();
+        productsData.forEach(prod => {
+          if (prod.categorias) {
+            prod.categorias.split(',').forEach(cat => {
+              const cleaned = cat.trim().toLowerCase();
+              if (cleaned) categoriesSet.add(cleaned);
+            });
+          }
+        });
+        renderDynamicCategories(Array.from(categoriesSet));
+
         document.getElementById('loading').style.display = 'none';
         renderCatalog(productsData);
       } catch (error) {
         console.error("Error cargando catálogo: ", error);
         document.getElementById('loading').innerText = "Hubo un problema al cargar el catálogo. Por favor intenta de nuevo.";
       }
+    }
+
+    // MEJORA: Dibujar los chips de categorías dinámicas en la interfaz
+    function renderDynamicCategories(categories) {
+      const container = document.getElementById('categoriesContainer');
+      container.innerHTML = "";
+      
+      if (categories.length === 0) {
+        container.innerHTML = "<p style='font-size:0.85rem; color:var(--color-secundario);'>No se encontraron categorías.</p>";
+        return;
+      }
+
+      categories.forEach(cat => {
+        const label = document.createElement('label');
+        label.className = 'category-chip';
+        label.innerHTML = `<input type="checkbox" value="${cat}"><span>${cat}</span>`;
+        container.appendChild(label);
+      });
     }
 
     // Dibujar las tarjetas en la pantalla
@@ -403,8 +492,6 @@
 
       products.forEach(prod => {
         const isSelected = selectedProducts.has(prod.id);
-        
-        // Formatear categorías para los tags visuales
         const tagsHTML = prod.categorias 
           ? prod.categorias.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('')
           : '';
@@ -412,8 +499,10 @@
         const card = document.createElement('div');
         card.className = `card ${isSelected ? 'selected' : ''}`;
         card.id = `card-${prod.id}`;
+        
+        // MEJORA: Se agrega el evento onclick="openLightbox(...)" al contenedor de la imagen
         card.innerHTML = `
-          <div class="card-img-container">
+          <div class="card-img-container" onclick="openLightbox('${prod.imagen || 'https://via.placeholder.com/400'}')">
             <img src="${prod.imagen || 'https://via.placeholder.com/400'}" alt="${prod.nombre}" loading="lazy">
           </div>
           <div class="card-info">
@@ -429,6 +518,18 @@
         `;
         grid.appendChild(card);
       });
+    }
+
+    // MEJORA: Funciones interactivas para controlar el zoom de la foto (Lightbox)
+    function openLightbox(src) {
+      const overlay = document.getElementById('lightboxOverlay');
+      const img = document.getElementById('lightboxImg');
+      img.src = src;
+      overlay.classList.add('open');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightboxOverlay').classList.remove('open');
     }
 
     // Marcar / Desmarcar un diseño
@@ -463,18 +564,14 @@
     // Sistema Inteligente Combinado de Filtros (Buscador + Checkboxes)
     function filterProducts() {
       const searchText = document.getElementById('searchBar').value.toLowerCase().trim();
-      
-      // Obtener qué categorías están marcadas
       const checkedBoxes = Array.from(document.querySelectorAll('#categoriesContainer input:checked'));
       const activeCategories = checkedBoxes.map(cb => cb.value.toLowerCase().trim());
 
       const filtered = productsData.filter(prod => {
-        // Filtro de texto (busca en ID o en el Nombre)
         const nameMatch = prod.nombre ? prod.nombre.toLowerCase().includes(searchText) : false;
         const idMatch = prod.id ? prod.id.toString().toLowerCase().includes(searchText) : false;
         const matchesSearch = nameMatch || idMatch;
 
-        // Filtro de Categorías Múltiples (Lógica "O": Muestra si tiene al menos una de las seleccionadas)
         let matchesCategory = true;
         if (activeCategories.length > 0) {
           if (!prod.categorias) {
@@ -505,26 +602,19 @@
       
       const clientName = document.getElementById('clientName').value.trim();
       const clientWa = document.getElementById('clientWhatsapp').value.trim();
-
-      // Recopilar los objetos de productos seleccionados
       const itemsOrdered = productsData.filter(p => selectedProducts.has(p.id));
       
-      // Construir el bloque de texto con los productos elegidos
       let productsListText = "";
       itemsOrdered.forEach(p => {
         productsListText += `\n- Código: ${p.id} (${p.nombre})`;
       });
 
-      // Construcción del mensaje final estructurado
       const finalMessage = `${BASE_MESSAGE}\n\n*MIS DATOS:*` +
                            `\n👤 *Nombre:* ${clientName}` +
                            `\n📱 *WhatsApp:* ${clientWa}\n` +
                            `\n🛒 *DISEÑOS SELECCIONADOS:*${productsListText}`;
 
-      // Generación de URL codificada para WhatsApp API
       const whatsappURL = `https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(finalMessage)}`;
-      
-      // Abrir chat en pestaña nueva
       window.open(whatsappURL, '_blank');
       closeModal();
     }
