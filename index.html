@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catálogo DecoStar</title>
+  <title>Catálogo DecoStar & Producción</title>
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='25' fill='%231A2530'/%3E%3Cpath d='M50 20 l8 18 l20 3 l-14 14 l3 20 l-17 -9 l-17 9 l3 -20 l-14 -14 l20 -3 z' fill='%23C5A059'/%3E%3C/svg%3E">
   
@@ -11,7 +11,7 @@
   
   <style>
     /* ==========================================================================
-       IDENTIDAD CORPORATIVA - MODIFICA AQUÍ TUS COLORES Y ESTILOS CUANDO QUIERAS
+       ESTILOS DEL CATÁLOGO DECOSTAR
        ========================================================================== */
     :root {
       --color-primario: #1A2530;     /* Azul Medianoche (Fondos oscuros, títulos) */
@@ -36,6 +36,7 @@
 
     /* Encabezado */
     header {
+      position: relative;
       background-color: var(--color-primario);
       color: #ffffff;
       text-align: center;
@@ -129,7 +130,7 @@
       color: #ffffff;
     }
 
-    /* Grid de Diseños (Completamente Responsive) */
+    /* Grid de Diseños */
     .catalog-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -153,7 +154,6 @@
       transform: translateY(-4px);
     }
     
-    /* Cursor de Zoom para denotar interactividad */
     .card-img-container {
       width: 100%;
       aspect-ratio: 1 / 1;
@@ -249,7 +249,7 @@
       font-family: var(--fuente-titulos);
     }
 
-    /* Modal (Ventana Emergente del Formulario) */
+    /* Modal Contacto */
     .modal-overlay {
       position: fixed;
       top:0; left:0; right:0; bottom:0;
@@ -320,7 +320,7 @@
       cursor: pointer;
     }
 
-    /* Estilos para el Zoom de Imagenes (Lightbox) */
+    /* Lightbox Zoom */
     .lightbox-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -360,75 +360,378 @@
       user-select: none;
     }
 
-    /* Mensaje de Carga de Datos */
     .loading {
       text-align: center;
       font-size: 1.2rem;
       color: var(--color-secundario);
       padding: 50px 0;
     }
+
+    /* ==========================================================================
+       ESTILOS EXCLUSIVOS Y AISLADOS DE LA CALCULADORA PRO (MODO OSCURO)
+       ========================================================================== */
+    #calculadora-section {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px 10px;
+      min-height: 100vh;
+    }
+    #calculadora-section * { box-sizing: border-box; }
+    
+    #calculadora-section .container-calc {
+      max-width: 500px;
+      margin: 0 auto;
+      background: #1e1e1e;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    #calculadora-section h2 { text-align: center; margin: 5px 0 15px 0; color: #ffffff; font-size: 22px; }
+    
+    #calculadora-section .modulo {
+      background: #252525;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 15px;
+    }
+    #calculadora-section .modulo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #383838;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+    #calculadora-section .modulo-title {
+      font-weight: bold;
+      font-size: 15px;
+      text-transform: uppercase;
+    }
+    
+    #calculadora-section .vinilo-block {
+      background: #1d1d1d;
+      border: 1px dashed #444;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+    #calculadora-section .vinilo-block-header {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+    #calculadora-section .vinilo-block-header input { flex: 1; border-color: #4dadf7; }
+
+    #calculadora-section .switch-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      color: #aaa;
+    }
+    #calculadora-section .switch-container input { width: auto; margin: 0; accent-color: #40c057; }
+
+    #calculadora-section .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    #calculadora-section .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    #calculadora-section .form-group { display: flex; flex-direction: column; }
+    #calculadora-section .form-group label { font-size: 11px; color: #888; margin-bottom: 3px; text-transform: uppercase; }
+    
+    #calculadora-section input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #444;
+      background-color: #2d2d2d;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    #calculadora-section input:focus { border-color: #40c057; outline: none; }
+    
+    #calculadora-section .nota-utilidad {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 4px;
+      display: block;
+    }
+
+    #calculadora-section button { border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    #calculadora-section .btn-add-sub { background-color: #0c2340; color: #4dadf7; padding: 10px; width: 100%; font-size: 14px; margin-top: 5px; }
+    #calculadora-section .btn-danger { background-color: #442323; color: #fc8181; padding: 10px 12px; font-size: 15px; }
+    #calculadora-section .btn-calc { 
+      background-color: #2b8a3e; 
+      color: white; 
+      width: 100%; 
+      padding: 15px; 
+      font-size: 18px; 
+      border-radius: 8px;
+      margin-top: 15px; 
+      box-shadow: 0 4px 12px rgba(43,138,62,0.3); 
+    }
+    
+    #calculadora-section .results {
+      background-color: #1a231c;
+      border-left: 5px solid #40c057;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      border: 1px solid #233125;
+      display: none;
+    }
+    #calculadora-section .res-section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #888;
+      margin: 10px 0 5px 0;
+      border-bottom: 1px solid #2d3d30;
+      padding-bottom: 2px;
+    }
+    #calculadora-section .res-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #bbb;
+    }
+    #calculadora-section .res-total {
+      font-size: 22px;
+      font-weight: bold;
+      color: #40c057;
+      border-top: 1px dashed #333;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+    #calculadora-section .btn-back-catalog {
+      background-color: #333;
+      color: #fff;
+      padding: 12px;
+      width: 100%;
+      font-size: 14px;
+      margin-top: 15px;
+      border: 1px solid #444;
+      transition: background 0.2s;
+    }
+    #calculadora-section .btn-back-catalog:hover {
+      background-color: #444;
+    }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo-container">
-      <img src="TU_URL_DE_LOGO_AQUI" alt="Logo DecoStar" class="logo-img" onerror="this.style.display='none'">
-    </div>
-    <h1>Catálogo DecoStar</h1>
-    <p>Selecciona tus diseños favoritos</p>
-  </header>
-
-  <div class="container">
-    <div class="filter-section">
-      <input type="text" id="searchBar" class="search-box" placeholder="Buscar por nombre o código único...">
+  <div id="catalogo-section">
+    <header>
+      <button onclick="checkSecurityAccess()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.08); border: 1px solid var(--color-secundario); color: #ffffff; padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-family: var(--fuente-cuerpo);">🔒 Acceso Privado</button>
       
-      <span class="categories-label">Filtrar por categorías (puedes marcar varias):</span>
-      <div class="categories-grid" id="categoriesContainer"></div>
+      <div class="logo-container">
+        <img src="TU_URL_DE_LOGO_AQUI" alt="Logo DecoStar" class="logo-img" onerror="this.style.display='none'">
+      </div>
+      <h1>Catálogo DecoStar</h1>
+      <p>Selecciona tus diseños favoritos</p>
+    </header>
+
+    <div class="container">
+      <div class="filter-section">
+        <input type="text" id="searchBar" class="search-box" placeholder="Buscar por nombre o código único...">
+        
+        <span class="categories-label">Filtrar por categorías (puedes marcar varias):</span>
+        <div class="categories-grid" id="categoriesContainer"></div>
+      </div>
+
+      <div id="loading" class="loading">Cargando los espectaculares diseños...</div>
+      <div class="catalog-grid" id="catalogGrid"></div>
     </div>
 
-    <div id="loading" class="loading">Cargando los espectaculares diseños...</div>
-    <div class="catalog-grid" id="catalogGrid"></div>
-  </div>
-
-  <div class="sticky-bar" id="stickyBar">
-    <div class="sticky-info">
-      <p id="selectedCount">0 diseños seleccionados</p>
+    <div class="sticky-bar" id="stickyBar">
+      <div class="sticky-info">
+        <p id="selectedCount">0 diseños seleccionados</p>
+      </div>
+      <button class="btn-order" onclick="openModal()">Hacer Pedido</button>
     </div>
-    <button class="btn-order" onclick="openModal()">Hacer Pedido</button>
-  </div>
 
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <h2>Datos de Contacto</h2>
-      <p style="font-size:0.85rem; color:var(--color-secundario); margin-bottom:20px;">Completa tus datos para enviarte los diseños preseleccionados.</p>
-      
-      <form id="orderForm" onsubmit="sendOrder(event)">
-        <div class="form-group">
-          <label for="clientName">Nombre Completo *</label>
-          <input type="text" id="clientName" required placeholder="Ej. Juan Pérez">
-        </div>
-        <div class="form-group">
-          <label for="clientWhatsapp">Número de WhatsApp *</label>
-          <input type="tel" id="clientWhatsapp" required placeholder="Ej. 3181234567">
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
-          <button type="submit" class="btn-submit">Enviar por WhatsApp 🚀</button>
-        </div>
-      </form>
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal">
+        <h2>Datos de Contacto</h2>
+        <p style="font-size:0.85rem; color:var(--color-secundario); margin-bottom:20px;">Completa tus datos para enviarte los diseños preseleccionados.</p>
+        
+        <form id="orderForm" onsubmit="sendOrder(event)">
+          <div class="form-group">
+            <label for="clientName">Nombre Completo *</label>
+            <input type="text" id="clientName" required placeholder="Ej. Juan Pérez">
+          </div>
+          <div class="form-group">
+            <label for="clientWhatsapp">Número de WhatsApp *</label>
+            <input type="tel" id="clientWhatsapp" required placeholder="Ej. 3181234567">
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+            <button type="submit" class="btn-submit">Enviar por WhatsApp 🚀</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox()">
+      <span class="lightbox-close">&times;</span>
+      <img class="lightbox-content" id="lightboxImg" alt="Diseño Ampliado">
     </div>
   </div>
 
-  <div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox()">
-    <span class="lightbox-close">&times;</span>
-    <img class="lightbox-content" id="lightboxImg" alt="Diseño Ampliado">
+
+  <div id="calculadora-section" style="display: none;">
+    <div class="container-calc">
+        <h2>Calculadora de Costos</h2>
+
+        <div class="modulo">
+            <div class="modulo-header">
+                <span class="modulo-title" style="color: #ff922b;">1. DTF</span>
+                <label class="switch-container">
+                    <input type="checkbox" id="use-dtf" checked onchange="toggleModulo('dtf')"> <span>Usar</span>
+                </label>
+            </div>
+            <div id="body-dtf">
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>Medida Gasto</label>
+                        <input type="number" id="dtf-medida" placeholder="Ej: 1" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label>Valor Metro</label>
+                        <input type="number" id="dtf-precio-metro" value="18000">
+                    </div>
+                    <div class="form-group">
+                        <label>Unidades Salen</label>
+                        <input type="number" id="dtf-unidades" placeholder="Ej: 5">
+                    </div>
+                </div>
+                <span class="nota-utilidad">⚠️ Este valor no sumará utilidad extra (ya la incluye).</span>
+            </div>
+        </div>
+
+        <div class="modulo">
+            <div class="modulo-header">
+                <span class="modulo-title" style="color: #4dadf7;">2. Vinilos, Telas y Apliques</span>
+                <label class="switch-container">
+                    <input type="checkbox" id="use-vinilo" checked onchange="toggleModulo('vinilo')"> <span>Usar</span>
+                </label>
+            </div>
+            
+            <div id="body-vinilo">
+                <div id="lista-vinilos">
+                    
+                    <div class="vinilo-block">
+                        <div class="vinilo-block-header">
+                            <input type="text" class="vin-nombre" placeholder="Nombre" value="Vinilo Americano Plateado">
+                            <button type="button" class="btn-danger" onclick="eliminarVinilo(this)">X</button>
+                        </div>
+                        <div class="grid-3">
+                            <div class="form-group">
+                                <label>Medida Gasto</label>
+                                <input type="number" class="vin-medida" placeholder="Ej: 0.5" step="any">
+                            </div>
+                            <div class="form-group">
+                                <label>Costo Material</label>
+                                <input type="number" class="vin-costo" placeholder="Precio">
+                            </div>
+                            <div class="form-group">
+                                <label>Unidades Salen</label>
+                                <input type="number" class="vin-unidades" placeholder="Ej: 10">
+                            </div>
+                        </div>
+                        <div class="grid-3">
+                            <div class="form-group">
+                                <label>Tiempo (MM:SS)</label>
+                                <input type="text" class="vin-tiempo-format" placeholder="Ej: 13:59">
+                            </div>
+                            <div class="form-group">
+                                <label>Limpieza (U.)</label>
+                                <input type="number" class="vin-limpieza" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Pega / Otros (U.)</label>
+                                <input type="number" class="vin-pega" value="0">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <button type="button" class="btn-add-sub" onclick="agregarVinilo()">+ Añadir Otro Material (Vinilo/Tela)</button>
+                <span class="nota-utilidad">✨ Margen del 20% calculado sobre el precio de venta final.</span>
+            </div>
+        </div>
+
+        <div class="modulo">
+            <div class="modulo-header">
+                <span class="modulo-title" style="color: #cc5de8;">3. Piedra y Plantilla</span>
+                <label class="switch-container">
+                    <input type="checkbox" id="use-piedra" checked onchange="toggleModulo('piedra')"> <span>Usar</span>
+                </label>
+            </div>
+            <div id="body-piedra">
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>Cant. Piedras</label>
+                        <input type="number" id="pie-cant" placeholder="Ej: 750">
+                    </div>
+                    <div class="form-group">
+                        <label>Multiplicador</label>
+                        <input type="number" id="pie-mult" value="1.3" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label>Unidades/Plantilla</label>
+                        <input type="number" id="pie-unidades-plan" value="7">
+                    </div>
+                </div>
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>Costo Dúplex</label>
+                        <input type="number" id="pie-duplex" value="70">
+                    </div>
+                    <div class="form-group">
+                        <label>Medida Transfer</label>
+                        <input type="number" id="pie-trans-medida" placeholder="Ej: 0.3" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label>Valor M. Transfer</label>
+                        <input type="number" id="pie-trans-precio" placeholder="Ej: 5000">
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Mano de Obra Plantilla</label>
+                        <input type="number" id="pie-mo" value="500">
+                    </div>
+                    <div class="form-group">
+                        <label>Valor Planchazo</label>
+                        <input type="number" id="pie-planchazo" value="700">
+                    </div>
+                </div>
+                <span class="nota-utilidad">✨ Margen del 20% calculado sobre el precio de venta final.</span>
+            </div>
+        </div>
+
+        <button type="button" class="btn-calc" onclick="calcularTodo()">CALCULAR PRECIO FINAL</button>
+
+        <div class="results" id="resultados">
+            <div class="res-item"><span>DTF (Por unidad):</span> <span id="out-dtf">$0.00</span></div>
+            
+            <div class="res-section-title">Desglose de Vinilos / Telas / Apliques</div>
+            <div id="out-vinilos-detalle"></div>
+            
+            <div class="res-section-title">Otros Procesos</div>
+            <div class="res-item"><span>Piedra + Plantilla (Con Ut.):</span> <span id="out-piedra">$0.00</span></div>
+            <div class="res-total"><span>Precio Sugerido / Unidad:</span> <span id="out-total">$0.00</span></div>
+        </div>
+
+        <button type="button" class="btn-back-catalog" onclick="returnToCatalog()">⬅ Volver al Catálogo</button>
+    </div>
   </div>
+
 
   <script>
-    /* ==========================================================================
-       CONFIGURACIÓN GENERAL
-       ========================================================================== */
+    /* --- CONFIGURACIÓN GENERAL DEL CATÁLOGO --- */
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxq3E3wbHK1ITwI2r4NvwxtMYhbd7uTh1dEHgD0CB55e-UPSCnMvFYex9-hPqU_gdGjCQ/exec"; 
     const MY_WHATSAPP = "573181688455"; 
     const BASE_MESSAGE = "Hola! Este es mi pedido, queda pendiente las medidas que se que me vas a dar una vez valides los diseños que tengo aquí";
@@ -436,16 +739,38 @@
     let productsData = [];
     let selectedProducts = new Set();
 
-    // Cargar datos al iniciar la página
+    // Sistema de Control de Acceso de Seguridad
+    function checkSecurityAccess() {
+      const inputCode = prompt("Introduce el código de seguridad para ingresar a la Calculadora:");
+      if (inputCode === "0302") {
+        document.getElementById('catalogo-section').style.display = 'none';
+        document.getElementById('calculadora-section').style.display = 'block';
+        // Adaptamos temporalmente el body al entorno oscuro de la calculadora
+        document.body.style.backgroundColor = "#121212";
+        document.body.style.paddingBottom = "40px";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (inputCode !== null) {
+        alert("Código de seguridad incorrecto. Acceso denegado.");
+      }
+    }
+
+    function returnToCatalog() {
+      document.getElementById('calculadora-section').style.display = 'none';
+      document.getElementById('catalogo-section').style.display = 'block';
+      // Restauramos los valores nativos del catálogo corporativo
+      document.body.style.backgroundColor = "var(--color-fondo-web)";
+      document.body.style.paddingBottom = "100px";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* --- LÓGICA DEL CATÁLOGO --- */
     async function loadCatalog() {
       try {
         const response = await fetch(APPS_SCRIPT_URL);
         productsData = await response.json();
         
-        // ORDEN ALEATORIO - Mezclar los diseños cada vez que se carga la página
         productsData.sort(() => Math.random() - 0.5);
 
-        // CATEGORÍAS DINÁMICAS - Extraer de manera inteligente lo que escribas en Sheets
         const categoriesSet = new Set();
         productsData.forEach(prod => {
           if (prod.categorias) {
@@ -465,7 +790,6 @@
       }
     }
 
-    // Dibujar los chips de categorías dinámicas en la interfaz
     function renderDynamicCategories(categories) {
       const container = document.getElementById('categoriesContainer');
       container.innerHTML = "";
@@ -483,7 +807,6 @@
       });
     }
 
-    // Dibujar las tarjetas en la pantalla
     function renderCatalog(products) {
       const grid = document.getElementById('catalogGrid');
       grid.innerHTML = "";
@@ -522,7 +845,6 @@
       });
     }
 
-    // Funciones interactivas para controlar el zoom de la foto (Lightbox)
     function openLightbox(src) {
       const overlay = document.getElementById('lightboxOverlay');
       const img = document.getElementById('lightboxImg');
@@ -530,12 +852,10 @@
       overlay.classList.add('open');
     }
 
-    // Cerrar el zoom
     function closeLightbox() {
       document.getElementById('lightboxOverlay').classList.remove('open');
     }
 
-    // Marcar / Desmarcar un diseño
     function toggleSelect(id) {
       const card = document.getElementById(`card-${id}`);
       if (selectedProducts.has(id)) {
@@ -550,7 +870,6 @@
       updateStickyBar();
     }
 
-    // Actualizar estados de la barra inferior
     function updateStickyBar() {
       const bar = document.getElementById('stickyBar');
       const countText = document.getElementById('selectedCount');
@@ -564,7 +883,6 @@
       }
     }
 
-    // Sistema Inteligente Combinado de Filtros (Buscador + Checkboxes)
     function filterProducts() {
       const searchText = document.getElementById('searchBar').value.toLowerCase().trim();
       const checkedBoxes = Array.from(document.querySelectorAll('#categoriesContainer input:checked'));
@@ -591,15 +909,12 @@
       renderCatalog(filtered);
     }
 
-    // Escuchadores de eventos para filtros inmediatos
     document.getElementById('searchBar').addEventListener('input', filterProducts);
     document.getElementById('categoriesContainer').addEventListener('change', filterProducts);
 
-    // Funciones del Modal
     function openModal() { document.getElementById('modalOverlay').classList.add('open'); }
     function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
 
-    // Procesar envío final a WhatsApp
     function sendOrder(event) {
       event.preventDefault();
       
@@ -622,7 +937,165 @@
       closeModal();
     }
 
-    // Arrancar la carga
+
+    /* --- LÓGICA DE LA CALCULADORA PRO --- */
+    function toggleModulo(tipo) {
+        const checked = document.getElementById('use-' + tipo).checked;
+        document.getElementById('body-' + tipo).style.opacity = checked ? '1' : '0.3';
+        document.getElementById('body-' + tipo).style.pointerEvents = checked ? 'auto' : 'none';
+    }
+
+    function agregarVinilo() {
+        const contenedor = document.getElementById('lista-vinilos');
+        const nuevoBloque = document.createElement('div');
+        nuevoBloque.className = 'vinilo-block';
+        nuevoBloque.innerHTML = `
+            <div class="vinilo-block-header">
+                <input type="text" class="vin-nombre" placeholder="Nombre del material...">
+                <button type="button" class="btn-danger" onclick="eliminarVinilo(this)">X</button>
+            </div>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Medida Gasto</label>
+                    <input type="number" class="vin-medida" placeholder="Ej: 0.5" step="any">
+                </div>
+                <div class="form-group">
+                    <label>Costo Material</label>
+                    <input type="number" class="vin-costo" placeholder="Precio">
+                </div>
+                <div class="form-group">
+                    <label>Unidades Salen</label>
+                    <input type="number" class="vin-unidades" placeholder="Ej: 10">
+                </div>
+            </div>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Tiempo (MM:SS)</label>
+                    <input type="text" class="vin-tiempo-format" placeholder="Ej: 05:10">
+                </div>
+                <div class="form-group">
+                    <label>Limpieza (U.)</label>
+                    <input type="number" class="vin-limpieza" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Pega / Otros (U.)</label>
+                    <input type="number" class="vin-pega" value="0">
+                </div>
+            </div>
+        `;
+        contenedor.appendChild(nuevoBloque);
+    }
+
+    function eliminarVinilo(boton) {
+        const bloques = document.querySelectorAll('.vinilo-block');
+        if (bloques.length > 1) {
+            boton.closest('.vinilo-block').remove();
+        } else {
+            const bloque = boton.closest('.vinilo-block');
+            bloque.querySelector('.vin-nombre').value = 'Vinilo Americano Plateado';
+            bloque.querySelectorAll('input[type="number"], input[type="text"]').forEach(i => {
+                if(i.className !== 'vin-nombre') i.value = '';
+            });
+        }
+    }
+
+    function convertirTiempoASegundos(tiempo) {
+        const t = tiempo.trim();
+        if (!t) return 0;
+        if (t.includes(':')) {
+            const partes = t.split(':');
+            return (parseFloat(partes[0]) || 0) * 60 + (parseFloat(partes[1]) || 0);
+        }
+        return (parseFloat(t) || 0) * 60;
+    }
+
+    function calcularTodo() {
+        let precioFinalAcumulado = 0;
+        
+        // --- CÁLCULO DTF ---
+        let dtfPorUnidad = 0;
+        if (document.getElementById('use-dtf').checked) {
+            const medida = parseFloat(document.getElementById('dtf-medida').value) || 0;
+            const precioMetro = parseFloat(document.getElementById('dtf-precio-metro').value) || 0;
+            const unidades = parseFloat(document.getElementById('dtf-unidades').value) || 1;
+            
+            dtfPorUnidad = (medida * precioMetro) / unidades;
+            precioFinalAcumulado += dtfPorUnidad;
+        }
+
+        // --- CÁLCULO DE VINILOS / TELAS ---
+        let htmlVinilosDetalle = "";
+        if (document.getElementById('use-vinilo').checked) {
+            const bloquesVinilo = document.querySelectorAll('.vinilo-block');
+            
+            bloquesVinilo.forEach((bloque, index) => {
+                let nombreMaterial = bloque.querySelector('.vin-nombre').value.trim();
+                if(!nombreMaterial) nombreMaterial = `Material #${index + 1}`;
+                
+                const medida = parseFloat(bloque.querySelector('.vin-medida').value) || 0;
+                const costoMaterial = parseFloat(bloque.querySelector('.vin-costo').value) || 0;
+                const unidades = parseFloat(bloque.querySelector('.vin-unidades').value) || 1;
+                const tiempoStr = bloque.querySelector('.vin-tiempo-format').value;
+                const limpieza = parseFloat(bloque.querySelector('.vin-limpieza').value) || 0;
+                const pega = parseFloat(bloque.querySelector('.vin-pega').value) || 0;
+
+                const segundos = convertirTiempoASegundos(tiempoStr);
+                const costoMaterialU = (medida * costoMaterial) / unidades;
+                const costoLaserU = (segundos * 12) / unidades; 
+                const costoLimpiezaU = limpieza;
+                const costoPegaU = pega;
+
+                const costoBaseIndividualU = costoMaterialU + costoLaserU + costoLimpiezaU + costoPegaU;
+                const costoIndividualConUt = costoBaseIndividualU / 0.80; 
+
+                precioFinalAcumulado += costoIndividualConUt;
+
+                htmlVinilosDetalle += `
+                    <div class="res-item">
+                        <span>• ${nombreMaterial} (u):</span> 
+                        <span>$${Math.round(costoIndividualConUt).toLocaleString('es-CO')} COP</span>
+                    </div>`;
+            });
+        } else {
+            htmlVinilosDetalle = `<div class="res-item" style="color:#777;"><em>Módulo desactivado</em></div>`;
+        }
+        
+        document.getElementById('out-vinilos-detalle').innerHTML = htmlVinilosDetalle;
+
+        // --- CÁLCULO PIEDRA / PLANTILLA ---
+        let piedraPorUnidadConUt = 0;
+        if (document.getElementById('use-piedra').checked) {
+            const cantPiedras = parseFloat(document.getElementById('pie-cant').value) || 0;
+            const multiplicador = parseFloat(document.getElementById('pie-mult').value) || 0;
+            const unidadesPlan = parseFloat(document.getElementById('pie-unidades-plan').value) || 1;
+            const duplex = parseFloat(document.getElementById('pie-duplex').value) || 0;
+            const transMedida = parseFloat(document.getElementById('pie-trans-medida').value) || 0;
+            const transPrecio = parseFloat(document.getElementById('pie-trans-precio').value) || 0;
+            const manoObra = parseFloat(document.getElementById('pie-mo').value) || 0;
+            const planchazo = parseFloat(document.getElementById('pie-planchazo').value) || 0;
+
+            const costoPiedrasU = cantPiedras * multiplicador;
+            const costoDuplexU = duplex / unidadesPlan;
+            const costoTransferU = (transMedida * transPrecio) / unidadesPlan;
+            const costoMOU = manoObra / unidadesPlan;
+            const costoPlanchazoU = planchazo / unidadesPlan;
+
+            const costoBasePiedraU = costoPiedrasU + costoDuplexU + costoTransferU + costoMOU + costoPlanchazoU;
+            
+            piedraPorUnidadConUt = costoBasePiedraU / 0.80;
+            precioFinalAcumulado += piedraPorUnidadConUt;
+        }
+
+        // --- IMPRIMIR EN PANTALLA ---
+        document.getElementById('out-dtf').innerText = '$' + Math.round(dtfPorUnidad).toLocaleString('es-CO') + ' COP';
+        document.getElementById('out-piedra').innerText = '$' + Math.round(piedraPorUnidadConUt).toLocaleString('es-CO') + ' COP';
+        document.getElementById('out-total').innerText = '$' + Math.round(precioFinalAcumulado).toLocaleString('es-CO') + ' COP';
+
+        document.getElementById('resultados').style.display = 'block';
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    // Inicializar carga de datos del catálogo
     loadCatalog();
   </script>
 </body>
