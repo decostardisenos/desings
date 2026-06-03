@@ -470,6 +470,19 @@
       margin-top: 15px; 
       box-shadow: 0 4px 12px rgba(43,138,62,0.3); 
     }
+    #calculadora-section .btn-clear {
+      background-color: #495057;
+      color: white;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      margin-top: 10px;
+      transition: background 0.2s;
+    }
+    #calculadora-section .btn-clear:hover {
+      background-color: #6c757d;
+    }
     
     #calculadora-section .results {
       background-color: #1a231c;
@@ -619,7 +632,6 @@
             
             <div id="body-vinilo">
                 <div id="lista-vinilos">
-                    
                     <div class="vinilo-block">
                         <div class="vinilo-block-header">
                             <input type="text" class="vin-nombre" placeholder="Nombre" value="Vinilo Americano Plateado">
@@ -654,7 +666,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
                 
                 <button type="button" class="btn-add-sub" onclick="agregarVinilo()">+ Añadir Otro Material (Vinilo/Tela)</button>
@@ -713,6 +724,7 @@
         </div>
 
         <button type="button" class="btn-calc" onclick="calcularTodo()">CALCULAR PRECIO FINAL</button>
+        <button type="button" class="btn-clear" onclick="limpiarCalculadora()">LIMPIAR DATOS</button>
 
         <div class="results" id="resultados">
             <div class="res-item"><span>DTF (Por unidad):</span> <span id="out-dtf">$0.00</span></div>
@@ -745,7 +757,6 @@
       if (inputCode === "0302") {
         document.getElementById('catalogo-section').style.display = 'none';
         document.getElementById('calculadora-section').style.display = 'block';
-        // Adaptamos temporalmente el body al entorno oscuro de la calculadora
         document.body.style.backgroundColor = "#121212";
         document.body.style.paddingBottom = "40px";
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -757,7 +768,6 @@
     function returnToCatalog() {
       document.getElementById('calculadora-section').style.display = 'none';
       document.getElementById('catalogo-section').style.display = 'block';
-      // Restauramos los valores nativos del catálogo corporativo
       document.body.style.backgroundColor = "var(--color-fondo-web)";
       document.body.style.paddingBottom = "100px";
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -938,11 +948,11 @@
     }
 
 
-    /* --- LÓGICA DE LA CALCULADORA PRO --- */
+    /* --- LÓGICA DE LA CALCULADORA PRO (COMPORTAMIENTO ACORDEÓN) --- */
     function toggleModulo(tipo) {
         const checked = document.getElementById('use-' + tipo).checked;
-        document.getElementById('body-' + tipo).style.opacity = checked ? '1' : '0.3';
-        document.getElementById('body-' + tipo).style.pointerEvents = checked ? 'auto' : 'none';
+        // Efecto acordeón nativo ocultando y mostrando el bloque de relleno por completo
+        document.getElementById('body-' + tipo).style.display = checked ? 'block' : 'none';
     }
 
     function agregarVinilo() {
@@ -1000,13 +1010,76 @@
     }
 
     function convertirTiempoASegundos(tiempo) {
-        const t = tiempo.trim();
+        const t = time = tiempo ? tiempo.trim() : '';
         if (!t) return 0;
         if (t.includes(':')) {
             const partes = t.split(':');
             return (parseFloat(partes[0]) || 0) * 60 + (parseFloat(partes[1]) || 0);
         }
         return (parseFloat(t) || 0) * 60;
+    }
+
+    // Función del botón Limpiar Datos
+    function limpiarCalculadora() {
+        // Resetear Módulo DTF
+        document.getElementById('dtf-medida').value = '';
+        document.getElementById('dtf-precio-metro').value = '18000';
+        document.getElementById('dtf-unidades').value = '';
+
+        // Resetear Módulo Vinilos a su estado inicial limpio
+        const contenedorVinilos = document.getElementById('lista-vinilos');
+        contenedorVinilos.innerHTML = `
+            <div class="vinilo-block">
+                <div class="vinilo-block-header">
+                    <input type="text" class="vin-nombre" placeholder="Nombre" value="Vinilo Americano Plateado">
+                    <button type="button" class="btn-danger" onclick="eliminarVinilo(this)">X</button>
+                </div>
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>Medida Gasto</label>
+                        <input type="number" class="vin-medida" placeholder="Ej: 0.5" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label>Costo Material</label>
+                        <input type="number" class="vin-costo" placeholder="Precio">
+                    </div>
+                    <div class="form-group">
+                        <label>Unidades Salen</label>
+                        <input type="number" class="vin-unidades" placeholder="Ej: 10">
+                    </div>
+                </div>
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>Tiempo (MM:SS)</label>
+                        <input type="text" class="vin-tiempo-format" placeholder="Ej: 13:59">
+                    </div>
+                    <div class="form-group">
+                        <label>Limpieza (U.)</label>
+                        <input type="number" class="vin-limpieza" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Pega / Otros (U.)</label>
+                        <input type="number" class="vin-pega" value="0">
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Resetear Módulo Piedras
+        document.getElementById('pie-cant').value = '';
+        document.getElementById('pie-mult').value = '1.3';
+        document.getElementById('pie-unidades-plan').value = '7';
+        document.getElementById('pie-duplex').value = '70';
+        document.getElementById('pie-trans-medida').value = '';
+        document.getElementById('pie-trans-precio').value = '';
+        document.getElementById('pie-mo').value = '500';
+        document.getElementById('pie-planchazo').value = '700';
+
+        // Ocultar caja de resultados anteriores
+        document.getElementById('resultados').style.display = 'none';
+        
+        // Regresar el scroll arriba cómodamente
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function calcularTodo() {
