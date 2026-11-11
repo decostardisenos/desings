@@ -456,7 +456,7 @@
     .tab-panel { animation: viewIn .45s var(--ease) both; padding-bottom: 50px; }
 
     .admin-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
-    @media (min-width: 900px) { .admin-grid { grid-template-columns: 380px 1fr; align-items: start; } .admin-grid > .panel:first-child { position: sticky; top: 80px; } }
+    @media (min-width: 900px) { .admin-grid { grid-template-columns: 380px 1fr; align-items: start; } .admin-grid > .panel:first-child { position: sticky; top: 80px; max-height: calc(100vh - 96px); max-height: calc(100dvh - 96px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(197, 160, 89, .5) transparent; } }
     .date-admin { display: flex; gap: 8px; margin-bottom: 14px; }
     .date-admin input { flex: 1; padding: 11px 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--input); outline: none; color-scheme: dark; }
     body:not(.dark) .date-admin input { color-scheme: light; }
