@@ -545,6 +545,75 @@
       .modal { padding: 20px; }
     }
 
+    /* ===== Ajustes finos para celular ===== */
+    .sm-only { display: none; }
+    @media (max-width: 560px) {
+      .sm-hide { display: none; }
+      .sm-only { display: inline; }
+
+      /* Portada más compacta */
+      .hero { padding: 34px 16px 92px; }
+      .logo-slot { width: 96px; height: 96px; border-radius: 24px; margin-bottom: 14px; }
+      .logo-slot::before { border-radius: 28px; }
+      .logo-slot img { max-width: 76px; max-height: 76px; border-radius: 14px; }
+      .logo-slot svg { width: 48px; height: 48px; }
+      .logo-slot.wide { min-width: 160px; height: 84px; padding: 10px 16px; }
+      .logo-slot.wide img { max-width: 220px; max-height: 64px; }
+      .hero h1 { margin: 14px 0 10px; }
+      .hero-stats { margin-top: 18px; gap: 10px; }
+      .stat strong { font-size: 1.3rem; }
+
+      /* Catálogo en 2 columnas */
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .card { border-radius: 14px; }
+      .card-info { padding: 10px; gap: 5px; }
+      .card-code { font-size: .62rem; letter-spacing: .4px; }
+      .card-title { font-size: .88rem; }
+      .tags { gap: 4px; margin-bottom: 4px; }
+      .tag { font-size: .62rem; padding: 1px 7px; }
+      .tag:nth-child(n+3) { display: none; }
+      .btn-select { padding: 9px 4px; font-size: .8rem; border-radius: 10px; }
+      .zoom-hint { display: none; }
+      .check-badge { width: 28px; height: 28px; top: 8px; right: 8px; font-size: .85rem; }
+      .card:hover { transform: none; }
+      .chip span { padding: 7px 12px; font-size: .8rem; }
+
+      /* Barra de pedido */
+      .order-bar { padding: 8px 8px 8px 12px; gap: 8px; border-radius: 18px; }
+      .order-bar .btn-gold { padding: 11px 16px; font-size: .9rem; }
+      .thumbs img { width: 32px; height: 32px; }
+
+      /* Panel y registros */
+      .page-head { padding: 26px 0 16px; }
+      .panel { padding: 16px; border-radius: 16px; }
+      .segmented { display: flex; width: 100%; }
+      .segmented button { flex: 1; padding: 10px 4px; font-size: .82rem; white-space: nowrap; }
+      .date-nav { grid-template-columns: 40px 1fr 40px; gap: 6px; }
+      .arrow { width: 40px; height: 40px; font-size: 1.4rem; border-radius: 12px; }
+      .date-center .val { font-size: 1.02rem; }
+      .date-center .lbl { font-size: .66rem; }
+      .toolbar { flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+      .record { padding: 14px 14px 12px 18px; }
+      .rrow { font-size: .86rem; }
+      .admin-record { flex-direction: column; }
+      .admin-actions { flex-direction: row; }
+      .admin-actions .small { flex: 1; padding: 9px; }
+
+      /* Calculadora: letra de 16px para que el iPhone no haga zoom */
+      .calc input[type=number], .calc input[type=text], .date-admin input, .field input, .field select, .search-input { font-size: 16px; }
+      .modulo { border-radius: 16px; }
+      .modulo-header { padding: 12px; gap: 8px; }
+      .modulo-title { font-size: .92rem; }
+      .modulo-inner { padding: 0 12px 12px; }
+      .vinilo-block { padding: 10px; }
+      .res-total { flex-wrap: wrap; }
+      .res-total span:last-child { font-size: 1.3rem; }
+
+      /* Pie de página centrado */
+      .footer-grid { justify-content: center; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
       .card { opacity: 1; transform: none; }
@@ -847,7 +916,7 @@
       <div class="thumbs" id="orderThumbs"></div>
       <span class="order-count" id="selectedCount">0 diseños</span>
     </div>
-    <button class="btn-gold" onclick="openModal()">Hacer pedido →</button>
+    <button class="btn-gold" onclick="openModal()"><span class="sm-hide">Hacer pedido →</span><span class="sm-only">Pedir →</span></button>
   </div>
 
   <!-- ===================== MODAL PEDIDO ===================== -->
@@ -1163,7 +1232,7 @@
       $('stickyBar').classList.toggle('show', show);
       document.body.classList.toggle('has-orderbar', show);
       const count = $('selectedCount');
-      count.textContent = `${n} diseño${n !== 1 ? 's' : ''} seleccionado${n !== 1 ? 's' : ''}`;
+      count.innerHTML = `${n} diseño${n !== 1 ? 's' : ''}<span class="sm-hide"> seleccionado${n !== 1 ? 's' : ''}</span>`;
       if (bump) { count.classList.remove('bump'); void count.offsetWidth; count.classList.add('bump'); }
       $('orderThumbs').innerHTML = selectedItems().slice(-4).map(p =>
         `<img src="${escapeHTML(p.imagen || PLACEHOLDER_IMG)}" alt="">`).join('');
@@ -1520,8 +1589,8 @@
 
     /* ---------- Cierre automático por inactividad ---------- */
     const MIN = 60 * 1000;
-    const LIMITE_INGRESO = 10 * MIN;  // contraseña personal (Ingresar)
-    const LIMITE_PANEL = 30 * MIN;    // código general del panel privado
+    const LIMITE_INGRESO = 60 * MIN;  // contraseña personal (Ingresar): 1 hora sin uso
+    const LIMITE_PANEL = 60 * MIN;    // código general del panel privado: 1 hora sin uso
     let lastActivity = Date.now();
 
     try {
