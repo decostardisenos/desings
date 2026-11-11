@@ -654,14 +654,14 @@
         <div class="lock">🔒</div>
         <div class="eyebrow">Acceso restringido</div>
         <h2 style="font-size:1.5rem">Panel privado</h2>
-        <p class="sub" style="margin-bottom:0">Calculadora de costos y administración de registros.</p>
-        <form onsubmit="login(event)">
-          <div id="loginMessage"></div>
+        <p class="sub" style="margin-bottom:0">Introduce el código de seguridad para ingresar.</p>
+        <form onsubmit="unlockPanel(event)">
+          <div id="codeMessage"></div>
           <div class="field">
-            <label for="adminPassword">Contraseña administrativa</label>
-            <input id="adminPassword" type="password" autocomplete="current-password" required placeholder="Ingresa tu contraseña">
+            <label for="accessCode">Código de seguridad</label>
+            <input id="accessCode" type="password" inputmode="numeric" autocomplete="off" required placeholder="••••" style="text-align:center;letter-spacing:8px;font-size:1.3rem">
           </div>
-          <button class="btn-gold btn-block" id="loginSubmit" style="width:100%">Iniciar sesión</button>
+          <button class="btn-gold btn-block" style="width:100%">Ingresar</button>
         </form>
         <a href="#catalogo" class="link-btn" style="display:inline-block;margin-top:14px;text-decoration:none">← Volver al catálogo</a>
       </div>
@@ -755,6 +755,22 @@
 
       <!-- ---------- ADMINISTRAR REGISTROS ---------- -->
       <div class="tab-panel hidden" id="tab-reg">
+        <!-- Contraseña de registros (se valida en el servidor) -->
+        <div class="panel login-card hidden" id="regLogin" style="margin:10px auto 0">
+          <div class="lock">📋</div>
+          <div class="eyebrow">Acceso restringido</div>
+          <h2 style="font-size:1.4rem">Administrar registros</h2>
+          <p class="sub" style="margin-bottom:0">Ingresa tu contraseña para gestionar los registros.</p>
+          <form onsubmit="login(event)">
+            <div id="loginMessage"></div>
+            <div class="field">
+              <label for="adminPassword">Contraseña administrativa</label>
+              <input id="adminPassword" type="password" autocomplete="current-password" required placeholder="Ingresa tu contraseña">
+            </div>
+            <button class="btn-gold" id="loginSubmit" style="width:100%">Iniciar sesión</button>
+          </form>
+        </div>
+        <div id="regPanel" class="hidden">
         <div id="adminMessage"></div>
         <div class="admin-grid">
           <div class="panel">
@@ -812,6 +828,7 @@
             <div class="admin-list" id="adminRecords"></div>
           </div>
         </div>
+        </div><!-- /regPanel -->
       </div>
     </div>
   </section>
@@ -936,7 +953,7 @@
     function route() {
       let name = location.hash.replace('#', '') || 'catalogo';
       if (!VIEWS.includes(name)) name = 'catalogo';
-      const viewId = (name === 'admin' && !sessionToken) ? 'login' : name;
+      const viewId = (name === 'admin' && !calcUnlocked) ? 'login' : name;
 
       if (viewId !== currentView) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -955,8 +972,8 @@
         if (!recordsLoaded) { recordsLoaded = true; loadDates(); } else { loadDates(true); }
       }
       if (viewId === 'login') {
-        $('loginMessage').innerHTML = '';
-        setTimeout(() => $('adminPassword').focus(), 300);
+        $('codeMessage').innerHTML = '';
+        setTimeout(() => $('accessCode').focus(), 300);
       }
       if (viewId === 'admin') { showAdminTab(activeTab); }
     }
@@ -1485,12 +1502,12 @@
         const result = await callServer('loginAdmin', $('adminPassword').value);
         setToken(result.token);
         $('adminPassword').value = '';
-        toast('Bienvenido al panel privado', 'ok');
-        currentView = '';
-        if (location.hash === '#admin') route(); else location.hash = '#admin';
+        $('loginMessage').innerHTML = '';
+        toast('Acceso a registros concedido', 'ok');
+        showAdminTab('reg');
       } catch (error) {
         $('loginMessage').innerHTML = `<div class="notice error">${escapeHTML(error.message)}</div>`;
-        const card = $('loginCard');
+        const card = $('regLogin');
         card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
       } finally {
         button.disabled = false;
@@ -1498,11 +1515,38 @@
       }
     }
 
+    // Código simple de la calculadora: solo evita entradas por error
+    const CODIGO_CALCULADORA = '0302';
+    let calcUnlocked = false;
+    try { calcUnlocked = sessionStorage.getItem('ds_calc') === '1'; } catch (e) {}
+
+    function unlockPanel(event) {
+      event.preventDefault();
+      if ($('accessCode').value === CODIGO_CALCULADORA) {
+        calcUnlocked = true;
+        try { sessionStorage.setItem('ds_calc', '1'); } catch (e) {}
+        $('accessCode').value = '';
+        $('codeMessage').innerHTML = '';
+        currentView = '';
+        if (location.hash === '#admin') route(); else location.hash = '#admin';
+      } else {
+        $('codeMessage').innerHTML = '<div class="notice error">Código de seguridad incorrecto. Acceso denegado.</div>';
+        const card = $('loginCard');
+        card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+        $('accessCode').select();
+      }
+    }
+
     async function logout() {
-      try { await callServer('logoutAdmin', sessionToken); } catch (error) { console.error(error); }
+      if (sessionToken) {
+        try { await callServer('logoutAdmin', sessionToken); } catch (error) { console.error(error); }
+      }
       setToken('');
       editingId = null;
       adminInitialized = false;
+      calcUnlocked = false;
+      try { sessionStorage.removeItem('ds_calc'); } catch (e) {}
+      activeTab = 'calc';
       toast('Sesión cerrada');
       location.hash = '#catalogo';
     }
@@ -1511,9 +1555,8 @@
       if (String(error.message).includes('Sesión')) {
         setToken('');
         adminInitialized = false;
-        currentView = '';
-        toast('Tu sesión expiró. Ingresa de nuevo.', 'err');
-        route();
+        toast('Tu sesión de registros expiró. Ingresa de nuevo.', 'err');
+        showAdminTab('reg');
         return true;
       }
       return false;
@@ -1537,6 +1580,11 @@
       $('tab-calc').classList.toggle('hidden', tab !== 'calc');
       $('tab-reg').classList.toggle('hidden', tab !== 'reg');
       requestAnimationFrame(moveSegPill);
+      if (tab === 'reg') {
+        $('regLogin').classList.toggle('hidden', !!sessionToken);
+        $('regPanel').classList.toggle('hidden', !sessionToken);
+        if (!sessionToken) { setTimeout(() => $('adminPassword').focus(), 250); return; }
+      }
       if (tab === 'reg' && !adminInitialized) {
         adminInitialized = true;
         $('adminDate').value = getToday();
