@@ -545,6 +545,77 @@
       .modal { padding: 20px; }
     }
 
+    /* =====================================================================
+       TEMPORADA NAVIDEÑA (se activa sola por fechas; ver NAVIDAD_INICIO/FIN)
+       ===================================================================== */
+    .snow, .lights, .xmas-only, .santa-hat { display: none; }
+    body.navidad .xmas-only { display: inline; }
+    body.navidad .xmas-hide { display: none; }
+
+    /* Nieve: solo en el catálogo */
+    body.navidad[data-view="catalogo"] .snow { display: block; }
+    .snow { position: fixed; inset: 0; pointer-events: none; z-index: 140; overflow: hidden; }
+    .flake {
+      position: absolute; top: -20px; color: #fff; line-height: 1;
+      text-shadow: 0 0 6px rgba(255, 255, 255, .8), 0 0 1px rgba(26, 37, 48, .5);
+      animation: fall var(--t, 12s) linear var(--delay, 0s) infinite;
+      will-change: transform;
+    }
+    @keyframes fall {
+      0% { transform: translate3d(0, -20px, 0) rotate(0deg); opacity: 0; }
+      8% { opacity: var(--o, .9); }
+      100% { transform: translate3d(var(--drift, 40px), 105vh, 0) rotate(300deg); opacity: var(--o, .9); }
+    }
+
+    /* Guirnalda de luces en la portada */
+    body.navidad .lights { display: flex; position: absolute; top: 0; left: 0; right: 0; height: 46px; justify-content: space-around; pointer-events: none; z-index: 1; }
+    .lights::before {
+      content: ""; position: absolute; left: -5%; right: -5%; top: -26px; height: 44px;
+      border-bottom: 2px solid rgba(20, 60, 40, .9); border-radius: 0 0 50% 50% / 0 0 34px 34px;
+    }
+    .bulb {
+      position: relative; width: 11px; height: 17px; margin-top: var(--y, 14px);
+      border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+      background: var(--c); animation: glow 1.4s ease-in-out var(--d, 0s) infinite alternate;
+    }
+    .bulb::before { content: ""; position: absolute; top: -5px; left: 2px; width: 7px; height: 6px; border-radius: 2px; background: #2c3b33; }
+    @keyframes glow {
+      from { opacity: .35; box-shadow: 0 0 2px 0 var(--c); }
+      to { opacity: 1; box-shadow: 0 0 16px 5px var(--c); }
+    }
+
+    /* Colores de temporada en la portada */
+    body.navidad .hero { background: radial-gradient(120% 140% at 50% 0%, #2b3f52 0%, var(--navy) 55%, #101a22 100%); }
+    body.navidad .orb.o1 { background: radial-gradient(circle, rgba(200, 50, 60, .35), transparent 65%); }
+    body.navidad .orb.o2 { background: radial-gradient(circle, rgba(31, 122, 77, .35), transparent 65%); }
+    body.navidad .eyebrow-pill { background: rgba(200, 50, 60, .16); color: #ffd9dc; border-color: rgba(220, 80, 90, .55); }
+    body.navidad .hero::after { background: linear-gradient(90deg, transparent, #c8323c, var(--gold-2), #1f7a4d, var(--gold-2), #c8323c, transparent); background-size: 200% 100%; }
+
+    /* Gorro sobre el logo */
+    body.navidad .santa-hat { display: block; position: absolute; z-index: 3; top: -30px; right: -22px; width: 64px; transform: rotate(22deg); filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .35)); animation: hatWiggle 4s ease-in-out infinite; transform-origin: 30% 90%; }
+    @keyframes hatWiggle { 0%, 100% { transform: rotate(22deg); } 50% { transform: rotate(14deg); } }
+
+    /* Detalles en tarjetas y pie de página */
+    body.navidad .card.selected .check-badge { background: #c8323c; }
+    .xmas-banner { display: none; }
+    body.navidad .xmas-banner {
+      display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; text-align: center;
+      margin: 0 0 22px; padding: 14px 16px; border-radius: 16px;
+      background: linear-gradient(120deg, rgba(200, 50, 60, .10), rgba(197, 160, 89, .14), rgba(31, 122, 77, .10));
+      border: 1px solid rgba(197, 160, 89, .35); font-family: var(--ft); font-weight: 600; color: var(--text);
+      animation: fadeUp .8s var(--ease) both;
+    }
+    .xmas-banner .gift { font-size: 1.4rem; animation: float 3s ease-in-out infinite; }
+
+    @media (max-width: 560px) {
+      body.navidad .santa-hat { width: 48px; top: -24px; right: -16px; }
+      .bulb { width: 9px; height: 14px; }
+      body.navidad .xmas-banner { font-size: .9rem; padding: 12px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      body.navidad[data-view="catalogo"] .snow { display: none; }
+    }
+
     /* ===== Ajustes finos para celular ===== */
     .sm-only { display: none; }
     @media (max-width: 560px) {
@@ -641,16 +712,18 @@
 
   <!-- ===================== CATÁLOGO ===================== -->
   <section class="view" id="view-catalogo">
+    <div class="snow" id="snow" aria-hidden="true"></div>
     <header class="hero">
+      <div class="lights" id="lights" aria-hidden="true"></div>
       <span class="orb o1"></span><span class="orb o2"></span>
       <div id="sparkles"></div>
       <!-- ESPACIO DEL LOGO: archivo Logo.png del repositorio -->
       <div class="logo-slot" id="logoSlot">
         <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 12 l10 23 l25 3 l-18 17 l5 25 l-22 -12 l-22 12 l5 -25 l-18 -17 l25 -3 z" fill="#C5A059"/></svg>
       </div>
-      <span class="eyebrow-pill">✦ Diseños exclusivos</span>
+      <span class="eyebrow-pill"><span class="xmas-hide">✦ Diseños exclusivos</span><span class="xmas-only">🎄 Temporada navideña · Diseños exclusivos</span></span>
       <h1>Catálogo <span class="shine">DecoStar</span></h1>
-      <p class="lead">Selecciona tus diseños favoritos y envíanos tu pedido por WhatsApp en un solo clic.</p>
+      <p class="lead"><span class="xmas-hide">Selecciona tus diseños favoritos y envíanos tu pedido por WhatsApp en un solo clic.</span><span class="xmas-only">Encuentra el detalle perfecto para regalar esta Navidad y pídelo por WhatsApp en un solo clic. 🎁</span></p>
       <div class="hero-stats">
         <div class="stat"><strong id="statDesigns">—</strong><span>Diseños</span></div>
         <div class="stat"><strong id="statCats">—</strong><span>Categorías</span></div>
@@ -669,6 +742,8 @@
         </div>
         <div class="chips" id="categoriesContainer"></div>
       </div>
+
+      <div class="xmas-banner"><span class="gift">🎁</span> Felices fiestas: haz tu pedido con tiempo para que llegue antes de Navidad <span class="gift">🎄</span></div>
 
       <div class="results-bar">
         <span id="resultsInfo">Cargando diseños...</span>
@@ -906,7 +981,7 @@
         <a href="#admin">🔒 Acceso privado</a>
         <a id="footerWa" target="_blank" rel="noopener">💬 WhatsApp</a>
       </div>
-      <div class="copy">© <span id="year"></span> DecoStar · Todos los derechos reservados</div>
+      <div class="copy"><span class="xmas-only">🎄 DecoStar te desea una feliz Navidad y un próspero año nuevo<br></span>© <span id="year"></span> DecoStar · Todos los derechos reservados</div>
     </div>
   </footer>
 
@@ -1025,6 +1100,7 @@
 
       if (name !== 'admin') lockIngreso();
       document.body.classList.toggle('dark', name === 'admin');
+      document.body.dataset.view = name;
       document.querySelectorAll('#navLinks a').forEach(a => a.classList.toggle('active', a.dataset.nav === name));
       moveNavPill();
       updateStickyBar();
@@ -2084,11 +2160,73 @@
         const slot = $('logoSlot');
         slot.innerHTML = `<img src="${LOGO_URL}" alt="Logo DecoStar">`;
         if (probe.naturalWidth > probe.naturalHeight * 1.4) slot.classList.add('wide');
+        addSantaHat();
         document.querySelectorAll('.brand-mark').forEach(m => { m.innerHTML = `<img src="${LOGO_URL}" alt="">`; m.style.background = '#fff'; });
       };
       probe.src = LOGO_URL;
     }
+
+    /* =====================================================================
+       TEMPORADA NAVIDEÑA
+       Se activa sola entre estas fechas (hora de Colombia, ambas incluidas).
+       Vista previa: agrega ?navidad=1 a la dirección (o ?navidad=0 para apagarla).
+       ===================================================================== */
+    const NAVIDAD_INICIO = '2026-11-28';
+    const NAVIDAD_FIN = '2027-01-02';
+
+    function esNavidad() {
+      const forced = new URLSearchParams(location.search).get('navidad');
+      if (forced === '1') return true;
+      if (forced === '0') return false;
+      const hoy = getToday();
+      return hoy >= NAVIDAD_INICIO && hoy <= NAVIDAD_FIN;
+    }
+
+    const SANTA_HAT = `<svg class="santa-hat" viewBox="0 0 64 56" aria-hidden="true">
+      <path d="M8 44 C14 22 28 6 46 8 C54 9 58 16 56 24 C52 18 46 17 42 22 C36 30 34 38 34 44 Z" fill="#c8323c"/>
+      <path d="M8 44 C14 22 28 6 46 8 C40 12 30 24 26 44 Z" fill="#a8222c" opacity=".55"/>
+      <rect x="4" y="40" width="40" height="12" rx="6" fill="#fff"/>
+      <circle cx="56" cy="26" r="7" fill="#fff"/>
+    </svg>`;
+
+    function addSantaHat() {
+      if (!document.body.classList.contains('navidad')) return;
+      const slot = $('logoSlot');
+      if (slot && !slot.querySelector('.santa-hat')) slot.insertAdjacentHTML('beforeend', SANTA_HAT);
+    }
+
+    function iniciarNavidad() {
+      if (!esNavidad()) return;
+      document.body.classList.add('navidad');
+
+      // Guirnalda de luces
+      const colores = ['#ff4d5a', '#ffd166', '#4ade80', '#60a5fa', '#f472b6'];
+      const n = window.innerWidth < 560 ? 11 : 22;
+      let luces = '';
+      for (let i = 0; i < n; i++) {
+        const y = 10 + Math.round(Math.sin((i / (n - 1)) * Math.PI) * 14);
+        luces += `<span class="bulb" style="--c:${colores[i % colores.length]};--d:${(i % 5) * 0.28}s;--y:${y}px"></span>`;
+      }
+      $('lights').innerHTML = luces;
+
+      // Nieve
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reduce) {
+        const total = window.innerWidth < 560 ? 22 : 40;
+        const copos = ['❄', '❅', '•', '❆'];
+        let html = '';
+        for (let i = 0; i < total; i++) {
+          const size = 8 + Math.random() * 14;
+          html += `<span class="flake" style="left:${Math.random() * 100}%;font-size:${size}px;--t:${9 + Math.random() * 10}s;--delay:${-Math.random() * 15}s;--drift:${-40 + Math.random() * 80}px;--o:${0.5 + Math.random() * 0.45}">${copos[i % copos.length]}</span>`;
+        }
+        $('snow').innerHTML = html;
+      }
+
+      addSantaHat();
+    }
+
     agregarVinilo('Vinilo Americano Plateado', 'Ej: 13:59');
+    iniciarNavidad();
     makeSparkles();
     route();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { moveNavPill(); moveSegPill(); });
