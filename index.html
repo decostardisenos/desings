@@ -575,7 +575,7 @@
     <header class="hero">
       <span class="orb o1"></span><span class="orb o2"></span>
       <div id="sparkles"></div>
-      <!-- ESPACIO DEL LOGO: sube tu logo al repositorio con el nombre logo.png -->
+      <!-- ESPACIO DEL LOGO: archivo Logo.png del repositorio -->
       <div class="logo-slot" id="logoSlot">
         <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 12 l10 23 l25 3 l-18 17 l5 25 l-22 -12 l-22 12 l5 -25 l-18 -17 l25 -3 z" fill="#C5A059"/></svg>
       </div>
@@ -756,8 +756,8 @@
           <form onsubmit="login(event)">
             <div id="loginMessage"></div>
             <div class="field">
-              <label for="adminPassword">Contraseña administrativa</label>
-              <input id="adminPassword" type="password" autocomplete="current-password" required placeholder="Ingresa tu contraseña">
+              <label for="adminPassword">Tu contraseña personal</label>
+              <input id="adminPassword" type="password" autocomplete="off" required placeholder="Ingresa tu contraseña">
             </div>
             <button class="btn-gold" id="loginSubmit" style="width:100%">Iniciar sesión</button>
           </form>
@@ -905,7 +905,7 @@
     const REGISTROS_URL = "https://script.google.com/macros/s/AKfycbzmZMAiCfy5JCqsnRCWKtjHkdQrNzP-WrDm_-ibWMZoqfAFbcpoL8VyrVv_S8hcswX8/exec";
     const MY_WHATSAPP = "573181688455";
     const BASE_MESSAGE = "Hola! Este es mi pedido, queda pendiente las medidas que se que me vas a dar una vez valides los diseños que tengo aquí";
-    const LOGO_URL = "logo.png"; // Sube tu logo al repo con este nombre (PNG con fondo transparente ideal)
+    const LOGO_URL = "Logo.png"; // Logo subido al repo (el nombre distingue mayúsculas)
 
     const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23E2E8F0'/%3E%3Cpath d='M50 30 l5 11 l12 2 l-9 8 l2 12 l-10 -6 l-10 6 l2 -12 l-9 -8 l12 -2 z' fill='%23C5A059'/%3E%3C/svg%3E";
 
@@ -954,6 +954,7 @@
         window.scrollTo(0, 0);
       }
 
+      if (name !== 'admin') lockIngreso();
       document.body.classList.toggle('dark', name === 'admin');
       document.querySelectorAll('#navLinks a').forEach(a => a.classList.toggle('active', a.dataset.nav === name));
       moveNavPill();
@@ -1271,8 +1272,9 @@
     /* ---------- Estado ---------- */
     let availableDates = [];
     let selectedDate = '';
+    // La sesión de "Ingresar" vive solo en memoria: se pide la contraseña cada vez
     let sessionToken = '';
-    try { sessionToken = sessionStorage.getItem('ds_token') || ''; } catch (e) {}
+    try { sessionStorage.removeItem('ds_token'); } catch (e) {}
     let editingId = null;
     let searchTimer = null;
     let publicRequest = 0;
@@ -1288,10 +1290,18 @@
 
     function setToken(token) {
       sessionToken = token || '';
-      try {
-        if (sessionToken) sessionStorage.setItem('ds_token', sessionToken);
-        else sessionStorage.removeItem('ds_token');
-      } catch (e) {}
+    }
+
+    // Cierra la sesión de "Ingresar" al salir de esa pestaña o del panel
+    function lockIngreso() {
+      if (!sessionToken) return;
+      const token = sessionToken;
+      setToken('');
+      adminInitialized = false;
+      editingId = null;
+      $('adminRecords').innerHTML = '';
+      $('adminMessage').innerHTML = '';
+      callServer('logoutAdmin', token).catch(() => {});
     }
 
     /* ---------- Fechas ---------- */
@@ -1507,13 +1517,49 @@
     // Código simple de la calculadora: solo evita entradas por error
     const CODIGO_CALCULADORA = '0302';
     let calcUnlocked = false;
-    try { calcUnlocked = sessionStorage.getItem('ds_calc') === '1'; } catch (e) {}
+
+    /* ---------- Cierre automático por inactividad ---------- */
+    const MIN = 60 * 1000;
+    const LIMITE_INGRESO = 10 * MIN;  // contraseña personal (Ingresar)
+    const LIMITE_PANEL = 30 * MIN;    // código general del panel privado
+    let lastActivity = Date.now();
+
+    try {
+      const t = Number(sessionStorage.getItem('ds_calc_t') || 0);
+      calcUnlocked = sessionStorage.getItem('ds_calc') === '1' && Date.now() - t < LIMITE_PANEL;
+      if (!calcUnlocked) { sessionStorage.removeItem('ds_calc'); sessionStorage.removeItem('ds_calc_t'); }
+    } catch (e) {}
+
+    function markActivity() {
+      const now = Date.now();
+      if (now - lastActivity < 5000) return;
+      lastActivity = now;
+      if (calcUnlocked) { try { sessionStorage.setItem('ds_calc_t', String(now)); } catch (e) {} }
+    }
+    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(ev =>
+      window.addEventListener(ev, markActivity, { passive: true }));
+
+    setInterval(() => {
+      const idle = Date.now() - lastActivity;
+      if (sessionToken && idle > LIMITE_INGRESO) {
+        lockIngreso();
+        if (currentView === 'admin' && activeTab === 'reg') showAdminTab('reg');
+        toast('Por seguridad se cerró tu sesión de Ingresar.', 'err');
+      }
+      if (calcUnlocked && idle > LIMITE_PANEL) {
+        calcUnlocked = false;
+        try { sessionStorage.removeItem('ds_calc'); sessionStorage.removeItem('ds_calc_t'); } catch (e) {}
+        toast('Por seguridad se cerró el panel privado.', 'err');
+        if (location.hash === '#admin') location.hash = '#catalogo';
+      }
+    }, 30000);
 
     function unlockPanel(event) {
       event.preventDefault();
       if ($('accessCode').value === CODIGO_CALCULADORA) {
         calcUnlocked = true;
-        try { sessionStorage.setItem('ds_calc', '1'); } catch (e) {}
+        lastActivity = Date.now();
+        try { sessionStorage.setItem('ds_calc', '1'); sessionStorage.setItem('ds_calc_t', String(lastActivity)); } catch (e) {}
         $('accessCode').value = '';
         $('codeMessage').innerHTML = '';
         currentView = '';
@@ -1534,7 +1580,7 @@
       editingId = null;
       adminInitialized = false;
       calcUnlocked = false;
-      try { sessionStorage.removeItem('ds_calc'); } catch (e) {}
+      try { sessionStorage.removeItem('ds_calc'); sessionStorage.removeItem('ds_calc_t'); } catch (e) {}
       activeTab = 'calc';
       toast('Sesión cerrada');
       location.hash = '#catalogo';
@@ -1564,6 +1610,7 @@
     }
 
     function showAdminTab(tab) {
+      if (tab !== 'reg') lockIngreso();
       activeTab = tab;
       document.querySelectorAll('#adminTabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
       $('tab-calc').classList.toggle('hidden', tab !== 'calc');
