@@ -565,7 +565,6 @@
       <div class="nav-links" id="navLinks">
         <span class="nav-pill" id="navPill"></span>
         <a href="#catalogo" data-nav="catalogo">Catálogo</a>
-        <a href="#registros" data-nav="registros">Registros</a>
         <a href="#admin" data-nav="admin" id="navAdmin">🔒 Privado</a>
       </div>
     </div>
@@ -609,44 +608,6 @@
     </div>
   </section>
 
-  <!-- ===================== REGISTROS PÚBLICOS ===================== -->
-  <section class="view" id="view-registros">
-    <div class="wrap">
-      <div class="page-head">
-        <div class="eyebrow">Consulta de información</div>
-        <h1>Listado de registros</h1>
-        <p>Consulta los registros disponibles organizados por fecha.</p>
-      </div>
-
-      <div class="panel">
-        <div class="date-nav">
-          <button class="arrow" id="previousDate" onclick="moveDate(1)" aria-label="Día anterior">‹</button>
-          <div class="date-center">
-            <div class="lbl">Fecha seleccionada</div>
-            <div class="val" id="selectedDate">Cargando...</div>
-            <div class="meta" id="dateMeta"></div>
-          </div>
-          <button class="arrow" id="nextDate" onclick="moveDate(-1)" aria-label="Día siguiente">›</button>
-        </div>
-        <div class="date-chips" id="dateShortcuts"></div>
-      </div>
-
-      <div class="toolbar">
-        <div class="t">Registros del día</div>
-        <div class="count-pill" id="recordCount">0 registros</div>
-      </div>
-
-      <div class="search-wrap" style="margin-bottom:16px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input class="search-input" id="publicSearch" type="search" placeholder="Buscar por cliente, código, material o color..." oninput="searchPublic()" aria-label="Buscar registros">
-      </div>
-
-      <div class="records" id="publicRecords">
-        <div class="loading-box"><div class="spinner"></div>Cargando registros...</div>
-      </div>
-    </div>
-  </section>
-
   <!-- ===================== LOGIN ===================== -->
   <section class="view" id="view-login">
     <div class="wrap login-wrap">
@@ -682,7 +643,8 @@
       <div class="segmented" id="adminTabs" role="tablist">
         <span class="seg-pill" id="segPill"></span>
         <button type="button" role="tab" data-tab="calc" class="active">🧮 Calculadora</button>
-        <button type="button" role="tab" data-tab="reg">📋 Registros</button>
+        <button type="button" role="tab" data-tab="ver">📋 Registros</button>
+        <button type="button" role="tab" data-tab="reg">✏️ Ingresar</button>
       </div>
 
       <!-- ---------- CALCULADORA ---------- -->
@@ -753,7 +715,37 @@
         </div>
       </div>
 
-      <!-- ---------- ADMINISTRAR REGISTROS ---------- -->
+      <!-- ---------- VER REGISTROS (sin clave extra) ---------- -->
+      <div class="tab-panel hidden" id="tab-ver">
+      <div class="panel">
+        <div class="date-nav">
+          <button class="arrow" id="previousDate" onclick="moveDate(1)" aria-label="Día anterior">‹</button>
+          <div class="date-center">
+            <div class="lbl">Fecha seleccionada</div>
+            <div class="val" id="selectedDate">Cargando...</div>
+            <div class="meta" id="dateMeta"></div>
+          </div>
+          <button class="arrow" id="nextDate" onclick="moveDate(-1)" aria-label="Día siguiente">›</button>
+        </div>
+        <div class="date-chips" id="dateShortcuts"></div>
+      </div>
+
+      <div class="toolbar">
+        <div class="t">Registros del día</div>
+        <div class="count-pill" id="recordCount">0 registros</div>
+      </div>
+
+      <div class="search-wrap" style="margin-bottom:16px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input class="search-input" id="publicSearch" type="search" placeholder="Buscar por cliente, código, material o color..." oninput="searchPublic()" aria-label="Buscar registros">
+      </div>
+
+      <div class="records" id="publicRecords">
+        <div class="loading-box"><div class="spinner"></div>Cargando registros...</div>
+      </div>
+      </div>
+
+      <!-- ---------- INGRESAR REGISTROS (con contraseña) ---------- -->
       <div class="tab-panel hidden" id="tab-reg">
         <!-- Contraseña de registros (se valida en el servidor) -->
         <div class="panel login-card hidden" id="regLogin" style="margin:10px auto 0">
@@ -842,7 +834,6 @@
       </a>
       <div class="footer-links">
         <a href="#catalogo">🛍️ Catálogo</a>
-        <a href="#registros">📋 Ver registros</a>
         <a href="#admin">🔒 Acceso privado</a>
         <a id="footerWa" target="_blank" rel="noopener">💬 WhatsApp</a>
       </div>
@@ -937,7 +928,7 @@
     /* =====================================================================
        NAVEGACIÓN (rutas con #)
        ===================================================================== */
-    const VIEWS = ['catalogo', 'registros', 'admin'];
+    const VIEWS = ['catalogo', 'admin'];
     let currentView = '';
     let catalogLoaded = false;
     let recordsLoaded = false;
@@ -952,6 +943,7 @@
 
     function route() {
       let name = location.hash.replace('#', '') || 'catalogo';
+      if (name === 'registros') { activeTab = 'ver'; name = 'admin'; }
       if (!VIEWS.includes(name)) name = 'catalogo';
       const viewId = (name === 'admin' && !calcUnlocked) ? 'login' : name;
 
@@ -968,9 +960,6 @@
       updateStickyBar();
 
       if (name === 'catalogo' && !catalogLoaded) { catalogLoaded = true; loadCatalog(); }
-      if (name === 'registros') {
-        if (!recordsLoaded) { recordsLoaded = true; loadDates(); } else { loadDates(true); }
-      }
       if (viewId === 'login') {
         $('codeMessage').innerHTML = '';
         setTimeout(() => $('accessCode').focus(), 300);
@@ -1341,7 +1330,7 @@
 
     // Actualización automática cada 2 minutos (sin parpadeo)
     setInterval(() => {
-      if (document.visibilityState === 'visible' && currentView === 'registros') loadDates(true);
+      if (document.visibilityState === 'visible' && currentView === 'admin' && activeTab === 'ver') loadDates(true);
     }, 120000);
 
     function renderDateNavigation() {
@@ -1579,6 +1568,10 @@
       document.querySelectorAll('#adminTabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
       $('tab-calc').classList.toggle('hidden', tab !== 'calc');
       $('tab-reg').classList.toggle('hidden', tab !== 'reg');
+      $('tab-ver').classList.toggle('hidden', tab !== 'ver');
+      if (tab === 'ver') {
+        if (!recordsLoaded) { recordsLoaded = true; loadDates(); } else { loadDates(true); }
+      }
       requestAnimationFrame(moveSegPill);
       if (tab === 'reg') {
         $('regLogin').classList.toggle('hidden', !!sessionToken);
